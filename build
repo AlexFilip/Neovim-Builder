@@ -17,9 +17,9 @@ fi
 
 if [[ "$COMMAND" == "--rebuild" ]] || [[ -z "$(docker image ls --filter reference="$IMAGE_FULL_NAME" -q)" ]]; then
     docker build --build-arg DEBIAN_VERSION=$DEBIAN_VERSION -t $IMAGE_FULL_NAME .
-
-    git -C neovim clean -Xdf
-    git -C neovim pull
-
-    docker run --rm -u $(id -u):$(id -g) -v ./neovim:/neovim $IMAGE_FULL_NAME
 fi
+
+git -C neovim clean -Xdf
+git -C neovim pull
+
+docker run --rm -u $(id -u):$(id -g) -v ./neovim:/neovim $IMAGE_FULL_NAME

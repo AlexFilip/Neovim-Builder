@@ -22,6 +22,6 @@ And to install it, run:
 
 You may include a `--rebuild` flag on `./build` to rebuild the image.
 
-Since this project is made for the sole purpose of building on my own machine, I am going to say that (for now) if you want to use this project to have a custom build of neovim, you will have to modify the `build` and/or `entrypoint` files.
+Since this project is made for the sole purpose of building on my own machine, I am going to say that (for now) if you want to use this project to have a custom build of neovim, you will have to modify the `build` and/or `build/entrypoint` files.
 
 

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd /neovim
+make CMAKE_BUILD_TYPE=RelWithDebInfo
+cd build
+cpack -G DEB

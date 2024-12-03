@@ -1,0 +1,11 @@
+#!/bin/sh
+
+ALL_DEB_FILES="$(ls neovim/build/*.deb)"
+
+if [[ $(echo $ALL_DEB_FILES | wc -l) > 1 ]]; then
+    # TODO: Do this more interactively
+    echo "More than one deb file. Please run `dpkg -i --force-overwrite` with one of the following:\n$ALL_DEB_FILES"
+    exit
+fi
+
+dpkg -i --force-overwrite $ALL_DEB_FILES

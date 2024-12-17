@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+build-image "$@"
+
+if ! [[ -d neovim ]]; then
+    git clone https://github.com/neovim/neovim.git
+fi
+
+git -C neovim clean -Xdf
+git -C neovim pull
+
+docker run --rm -u $(id -u):$(id -g) -v ./neovim:/neovim $IMAGE_FULL_NAME

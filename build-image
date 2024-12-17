@@ -2,24 +2,14 @@
 
 set -e
 
-DEBIAN_VERSION=$(cat /etc/debian_version)
-
-IMAGE_FULL_NAME="neovim-builder:custom-$DEBIAN_VERSION"
-
 if [[ -n "$1" ]]; then
     COMMAND="$1"
     shift
 fi
 
-if ! [[ -d neovim ]]; then
-    git clone https://github.com/neovim/neovim.git
-fi
-
+DEBIAN_VERSION=$(cat /etc/debian_version)
+IMAGE_FULL_NAME="cpp-builder:custom-$DEBIAN_VERSION"
 if [[ "$COMMAND" == "--rebuild" ]] || [[ -z "$(docker image ls --filter reference="$IMAGE_FULL_NAME" -q)" ]]; then
     docker build --build-arg DEBIAN_VERSION=$DEBIAN_VERSION -t $IMAGE_FULL_NAME .
 fi
 
-git -C neovim clean -Xdf
-git -C neovim pull
-
-docker run --rm -u $(id -u):$(id -g) -v ./neovim:/neovim $IMAGE_FULL_NAME

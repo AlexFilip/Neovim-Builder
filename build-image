@@ -10,6 +10,6 @@ fi
 DEBIAN_VERSION=$(cat /etc/debian_version)
 IMAGE_FULL_NAME="cpp-builder:custom-$DEBIAN_VERSION"
 if [[ "$COMMAND" == "--rebuild" ]] || [[ -z "$(docker image ls --filter reference="$IMAGE_FULL_NAME" -q)" ]]; then
-    docker build --build-arg DEBIAN_VERSION=$DEBIAN_VERSION -t $IMAGE_FULL_NAME .
+    docker build --build-arg DEBIAN_VERSION=$DEBIAN_VERSION -t $IMAGE_FULL_NAME build
 fi
 

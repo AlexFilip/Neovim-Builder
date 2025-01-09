@@ -10,7 +10,7 @@ function version_cmp(v1, v2) {
     return 0
 }
 
-/[0-9]+(\.[0-9]+)*/ {
+/v?[0-9]+(\.[0-9]+)*/ {
     # Remove leading "v" if present
     version = $0
     sub(/^v/, "", version)

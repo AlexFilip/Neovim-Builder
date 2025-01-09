@@ -2,6 +2,13 @@
 
 set -e
 
+# # Testing different tools for version comparison
+# if [[ "$1" == "jq" ]] || [[ "$1" == "awk" ]] || [[ "$1" == "git" ]]; then
+#     TOOL="$1"
+#     shift
+# fi
+TOOL="jq"
+
 GH_REPO_OWNER=neovim
 GH_REPO_NAME=neovim
 LOCAL_REPO_NAME=neovim
@@ -13,16 +20,35 @@ if ! [[ -d $LOCAL_REPO_NAME ]]; then
 fi
 
 git -C $LOCAL_REPO_NAME clean -Xdf
-
-HIGHEST_VERSION_TAG=$(git -C $LOCAL_REPO_NAME tag | jq -Rrs \
-      'split("\n") as $original_arr
-       | $original_arr
-       | map(sub("^v"; "") | select(test("^[0-9]+(\\.[0-9]+)*$")))
-       | sort_by(split(".") | map(tonumber))
-       | last as $highest
-       | $original_arr[] | select(sub("^v"; "") == $highest)')
-
 git -C $LOCAL_REPO_NAME fetch
+
+# I don't know which tool I want to use going forward. The awk and jq versions I know will work
+# but the git version doesn't really make sense to me. If that one looks like it will work for
+# other repos, then I'll default to that one and keep the other version comparison scripts in
+# a vault.
+case $TOOL in
+    "jq")
+        # jq version
+        HIGHEST_VERSION_TAG=$(git -C $LOCAL_REPO_NAME tag | jq -Rrs -f compare.jq)
+        ;;
+
+    "awk")
+        # Awk version
+        HIGHEST_VERSION_TAG=$(git -C $LOCAL_REPO_NAME tag | awk -f compare.awk)
+        ;;
+
+    "git")
+        # Direct git version
+        HIGHEST_VERSION_TAG=$(git -C $LOCAL_REPO_NAME describe --tags $(git -C $LOCAL_REPO_NAME rev-list --tags --max-count=1))
+        ;;
+
+    *)
+        echo "Unrecognized language" > /dev/stderr
+esac
+
+echo "Highest version = $HIGHEST_VERSION_TAG"
+exit
+
 git -C $LOCAL_REPO_NAME checkout tags/$HIGHEST_VERSION_TAG
 git -C $LOCAL_REPO_NAME pull origin tags/$HIGHEST_VERSION_TAG
 

@@ -2,15 +2,30 @@
 
 set -e
 
+GH_REPO_OWNER=neovim
+GH_REPO_NAME=neovim
+LOCAL_REPO_NAME=neovim
+
 ./build-image "$@"
 
-if ! [[ -d neovim ]]; then
-    git clone https://github.com/neovim/neovim.git
+if ! [[ -d $LOCAL_REPO_NAME ]]; then
+    git clone https://github.com/GH_REPO_OWNER/GH_REPO_NAME.git
 fi
 
-git -C neovim clean -Xdf
-git -C neovim pull
+git -C $LOCAL_REPO_NAME clean -Xdf
+
+HIGHEST_VERSION_TAG=$(curl "https://api.github.com/repos/$GH_REPO_OWNER/$GH_REPO_NAME/tags" | jq -r \
+'[.[].name] as $original_arr
+       | $original_arr
+       | map(sub("^v"; "") | select(test("^[0-9]+(\\.[0-9]+)*$")))
+       | sort_by(split(".") | map(tonumber))
+       | last as $highest
+       | $original_arr[] | select(sub("^v"; "") == $highest)')
+
+git -C $LOCAL_REPO_NAME fetch
+git -C $LOCAL_REPO_NAME checkout tags/$HIGHEST_VERSION_TAG
+git -C $LOCAL_REPO_NAME pull origin tags/$HIGHEST_VERSION_TAG
 
 DEBIAN_VERSION=$(cat /etc/debian_version)
 IMAGE_FULL_NAME="cpp-builder:custom-$DEBIAN_VERSION"
-docker run --rm -u $(id -u):$(id -g) -v ./neovim:/neovim $IMAGE_FULL_NAME
+docker run --rm -u $(id -u):$(id -g) -v ./$LOCAL_REPO_NAME:/$LOCAL_REPO_NAME $IMAGE_FULL_NAME

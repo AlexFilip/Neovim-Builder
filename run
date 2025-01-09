@@ -14,8 +14,8 @@ fi
 
 git -C $LOCAL_REPO_NAME clean -Xdf
 
-HIGHEST_VERSION_TAG=$(curl "https://api.github.com/repos/$GH_REPO_OWNER/$GH_REPO_NAME/tags" | jq -r \
-'[.[].name] as $original_arr
+HIGHEST_VERSION_TAG=$(git -C $LOCAL_REPO_NAME tag | jq -Rrs \
+      'split("\n") as $original_arr
        | $original_arr
        | map(sub("^v"; "") | select(test("^[0-9]+(\\.[0-9]+)*$")))
        | sort_by(split(".") | map(tonumber))

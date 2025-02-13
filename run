@@ -47,7 +47,6 @@ case $TOOL in
 esac
 
 echo "Highest version = $HIGHEST_VERSION_TAG"
-exit
 
 git -C $LOCAL_REPO_NAME checkout tags/$HIGHEST_VERSION_TAG
 git -C $LOCAL_REPO_NAME pull origin tags/$HIGHEST_VERSION_TAG

@@ -8,10 +8,10 @@ The version of neovim on debian is too old for the plugins that I often use, so 
 
 ## Usage
 
-I tried to make the system as frictionless as possible. To build the image and neovim, run:
+I tried to make the system as frictionless as possible. To build the image and neovim, invoke the run script:
 
 ```bash
-./build
+./run
 ```
 
 And to install it, run:

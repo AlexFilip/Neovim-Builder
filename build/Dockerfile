@@ -1,4 +1,4 @@
-ARG DEBIAN_VERSION
+ARG DEBIAN_VERSION=latest
 FROM debian:${DEBIAN_VERSION}
 
 RUN apt update && apt upgrade -yq

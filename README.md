@@ -11,7 +11,7 @@ The version of neovim on debian is too old for the plugins that I often use, so 
 I tried to make the system as frictionless as possible. To build the image and neovim, invoke the run script:
 
 ```bash
-./run
+./compile
 ```
 
 And to install it, run:

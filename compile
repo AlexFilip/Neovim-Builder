@@ -2,18 +2,26 @@
 
 set -e
 
-# # Testing different tools for version comparison
-# if [[ "$1" == "jq" ]] || [[ "$1" == "awk" ]] || [[ "$1" == "git" ]]; then
-#     TOOL="$1"
-#     shift
-# fi
-TOOL="jq"
+if [[ -n "$1" ]]; then
+    COMMAND="$1"
+    shift
+fi
+
+# Testing different tools for version comparison
+# TOOL="jq"
+# TOOL="git"
+TOOL="awk"
 
 GH_REPO_OWNER=neovim
 GH_REPO_NAME=neovim
 LOCAL_REPO_NAME=neovim
 
-./build-image "$@"
+DEBIAN_VERSION=$(cat /etc/debian_version)
+IMAGE_FULL_NAME="cpp-builder:custom-$DEBIAN_VERSION"
+if [[ "$COMMAND" == "--rebuild" ]] || [[ -z "$(docker image ls --filter reference="$IMAGE_FULL_NAME" -q)" ]]; then
+    docker pull debian:$DEBIAN_VERSION
+    docker build --build-arg DEBIAN_VERSION=$DEBIAN_VERSION -t $IMAGE_FULL_NAME build
+fi
 
 if ! [[ -d $LOCAL_REPO_NAME ]]; then
     git clone https://github.com/GH_REPO_OWNER/GH_REPO_NAME.git
@@ -51,6 +59,4 @@ echo "Highest version = $HIGHEST_VERSION_TAG"
 git -C $LOCAL_REPO_NAME checkout tags/$HIGHEST_VERSION_TAG
 git -C $LOCAL_REPO_NAME pull origin tags/$HIGHEST_VERSION_TAG
 
-DEBIAN_VERSION=$(cat /etc/debian_version)
-IMAGE_FULL_NAME="cpp-builder:custom-$DEBIAN_VERSION"
 docker run --rm -u $(id -u):$(id -g) -v ./$LOCAL_REPO_NAME:/$LOCAL_REPO_NAME $IMAGE_FULL_NAME
